@@ -25,15 +25,12 @@ number = do
   n <- many1 digit
   return . read $ n
 
-str = char '"' *> many (noneOf ['"']) <* (char '"' <* spaces)
+str = between (char '"') (char '"' >> spaces) (many $ noneOf ['"'])
+boolTrue = string "true" <* spaces
+boolFalse = string "false" <* spaces
+nullValue = string "null" <* spaces
 
-boolTrue = string "true"
-
-boolFalse = string "false"
-
-nullValue = string "null"
-
-array = char '[' *> parseJson `sepEndBy` (char ',') <* char ']'
+array = between (char '[' >> spaces) (char ']') ((spaces *> parseJson <* spaces) `sepEndBy` (char ','))
 
 object = do
   char '{'
@@ -58,7 +55,6 @@ main = do
   parseTest parseJson "true"
   parseTest parseJson "false"
   parseTest parseJson "null"
-  parseTest parseJson "[1,2,3]"
-  parseTest parseJson "[123,null,true,false,\"abc\"]"
-  parseTest parseJson "{\"key\":\"value\",\"key2\":123,\"key3\":true,\"key4\":null,\"key5\":[1,2,3],\"key5\":{\"nested\":null}}"
-  parseTest parseJson "{ \"key\" : \"value\" , \"key2\" : 123 }"
+  parseTest parseJson "[ 1 , 2 , 3 ]"
+  parseTest parseJson "[ 123 , null , true , false , \"abc\" ]"
+  parseTest parseJson "{ \"key\" : \"value\" , \"key2\" : 123, \"key3\" : false, \"key4\" : null , \"key5\" : [ 1 , 2 , 3 ] , \"key6\" : { \"nested\" : null } }"
