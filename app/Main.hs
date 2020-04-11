@@ -32,13 +32,7 @@ nullValue = string "null" <* spaces
 
 array = between (char '[' >> spaces) (char ']') ((spaces *> parseJson <* spaces) `sepEndBy` (char ','))
 
-object = do
-  char '{'
-  spaces
-  kvs <- (spaces *> kv <* spaces) `sepEndBy` (char ',')
-  spaces
-  char '}'
-  return kvs
+object = between (char '{' >> spaces) (spaces >> char '}') ((spaces *> kv <* spaces) `sepEndBy` (char ','))
 
 kv = do
   k <- str
