@@ -11,6 +11,7 @@ data JsonValue = JNumber Int
                | JBool Bool
                | JNull
                | JArray [JsonValue]
+               | JObject [(String, JsonValue)]
                deriving (Eq, Show)
 
 parseJson :: Parser JsonValue
@@ -20,6 +21,7 @@ parseJson = JNumber <$> (number <?> "integer")
             <|> JBool False <$ boolFalse
             <|> JNull <$ nullValue
             <|> JArray <$> array
+            <|> JObject <$> object
 
 number = do
   n <- many1 digit
@@ -35,6 +37,14 @@ nullValue = string "null"
 
 array = char '[' *> parseJson `sepEndBy` (char ',') <* char ']'
 
+object = char '{' *> kv `sepEndBy` (char ',') <* char '}'
+
+kv = do
+  k <- str
+  char ':'
+  v <- parseJson
+  return (k, v)
+
 main :: IO ()
 main = do
   parseTest parseJson "123"
@@ -44,3 +54,4 @@ main = do
   parseTest parseJson "null"
   parseTest parseJson "[1,2,3]"
   parseTest parseJson "[123,null,true,false,\"abc\"]"
+  parseTest parseJson "{\"key\":\"value\",\"key2\":123,\"key3\":true,\"key4\":null,\"key5\":[1,2,3],\"key5\":{\"nested\":null}}"
