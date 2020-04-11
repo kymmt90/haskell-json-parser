@@ -4,7 +4,6 @@ import Lib
 
 import Data.Char (digitToInt)
 import Text.Parsec
-import Text.Parsec.String
 
 data JsonValue = JNumber Int
                | JString String
@@ -14,7 +13,6 @@ data JsonValue = JNumber Int
                | JObject [(String, JsonValue)]
                deriving (Eq, Show)
 
-parseJson :: Parser JsonValue
 parseJson = JNumber <$> (number <?> "integer")
             <|> JString <$> str
             <|> JBool True <$ boolTrue
