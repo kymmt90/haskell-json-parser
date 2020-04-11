@@ -27,7 +27,7 @@ number = do
   n <- many1 digit
   return . read $ n
 
-str = char '"' *> many (noneOf ['"']) <* char '"'
+str = char '"' *> many (noneOf ['"']) <* (char '"' <* spaces)
 
 boolTrue = string "true"
 
@@ -37,11 +37,19 @@ nullValue = string "null"
 
 array = char '[' *> parseJson `sepEndBy` (char ',') <* char ']'
 
-object = char '{' *> kv `sepEndBy` (char ',') <* char '}'
+object = do
+  char '{'
+  spaces
+  kvs <- (spaces *> kv <* spaces) `sepEndBy` (char ',')
+  spaces
+  char '}'
+  return kvs
 
 kv = do
   k <- str
+  spaces
   char ':'
+  spaces
   v <- parseJson
   return (k, v)
 
@@ -55,3 +63,4 @@ main = do
   parseTest parseJson "[1,2,3]"
   parseTest parseJson "[123,null,true,false,\"abc\"]"
   parseTest parseJson "{\"key\":\"value\",\"key2\":123,\"key3\":true,\"key4\":null,\"key5\":[1,2,3],\"key5\":{\"nested\":null}}"
+  parseTest parseJson "{ \"key\" : \"value\" , \"key2\" : 123 }"
