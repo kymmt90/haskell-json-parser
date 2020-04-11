@@ -5,7 +5,7 @@ import Lib
 import Data.Char (digitToInt)
 import Text.Parsec
 
-data JsonValue = JNumber Int
+data JsonValue = JNumber Double
                | JString String
                | JBool Bool
                | JNull
@@ -13,7 +13,7 @@ data JsonValue = JNumber Int
                | JObject [(String, JsonValue)]
                deriving (Eq, Show)
 
-parseJson = JNumber <$> (number <?> "integer")
+parseJson = JNumber <$> number
             <|> JString <$> str
             <|> JBool True <$ boolTrue
             <|> JBool False <$ boolFalse
@@ -22,8 +22,9 @@ parseJson = JNumber <$> (number <?> "integer")
             <|> JObject <$> object
 
 number = do
-  n <- many1 digit
-  return . read $ n
+  integer <- many1 digit
+  decimal <- option "" $ (:) <$> char '.' <*> many1 digit
+  return . read $ (integer ++ decimal)
 
 str = between (char '"') (char '"' >> spaces) (many $ noneOf ['"'])
 boolTrue = string "true" <* spaces
@@ -51,6 +52,7 @@ kv = do
 main :: IO ()
 main = do
   parseTest parseJson "123"
+  parseTest parseJson "123.456"
   parseTest parseJson "\"abc\""
   parseTest parseJson "true"
   parseTest parseJson "false"
