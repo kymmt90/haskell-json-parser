@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d35cd80789c606893545b631c23aca7496a69d1cf6b6cb13d4beb3d2e11c3a92
+-- hash: 74e213213a733b2cbfe5b9cb6449161750b598debc78533276d21b356583ddcc
 
 name:           json-parser
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , parsec
   default-language: Haskell2010
 
 executable json-parser-exe
@@ -46,6 +47,7 @@ executable json-parser-exe
   build-depends:
       base >=4.7 && <5
     , json-parser
+    , parsec
   default-language: Haskell2010
 
 test-suite json-parser-test
@@ -59,4 +61,5 @@ test-suite json-parser-test
   build-depends:
       base >=4.7 && <5
     , json-parser
+    , parsec
   default-language: Haskell2010
