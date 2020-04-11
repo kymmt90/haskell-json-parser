@@ -2,7 +2,6 @@ module Main where
 
 import Lib
 
-import Data.Char (digitToInt)
 import Text.Parsec
 
 data JsonValue = JNumber Double
